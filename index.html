@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교실 CO2 저감 시뮬레이터</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            background: #f8fafc; 
+        }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px); 
+            border-radius: 1.5rem; 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+        }
+        input[type="range"] { 
+            -webkit-appearance: none; 
+            width: 100%; 
+            background: transparent; 
+        }
+        input[type="range"]::-webkit-slider-runnable-track { 
+            width: 100%; 
+            height: 10px; 
+            cursor: pointer; 
+            background: #e2e8f0; 
+            border-radius: 5px; 
+        }
+        input[type="range"]::-webkit-slider-thumb { 
+            height: 26px; 
+            width: 26px; 
+            border-radius: 50%; 
+            background: #2563eb; 
+            cursor: pointer; 
+            -webkit-appearance: none; 
+            margin-top: -8px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15); 
+            transition: transform 0.1s ease; 
+        }
+        input[type="range"]:active::-webkit-slider-thumb { 
+            transform: scale(1.2); 
+        }
+        .highlight-row { 
+            background-color: #eff6ff !important; 
+            border-left: 4px solid #3b82f6;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Main Header -->
+        <header class="text-center mb-12 fade-in">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-3">교실 CO₂ 저감 시뮬레이션</h1>
+            <p class="text-slate-500 font-semibold text-lg">수분 함유 탄산나트륨(WSC) 반응 계산 시스템</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+            <!-- Left Column: Controls & Env Info -->
+            <div class="lg:col-span-5 space-y-6 fade-in" style="animation-delay: 0.1s">
+                <!-- Control Panel -->
+                <section class="glass-card p-8 shadow-2xl border-t-4 border-blue-600">
+                    <div class="flex justify-between items-end mb-8">
+                        <label class="text-xs font-black text-slate-400 uppercase tracking-widest">현재 CO₂ 농도</label>
+                        <div class="text-right">
+                            <span id="ppm-val" class="text-6xl font-black text-blue-600">1,400</span>
+                            <span class="text-xl font-bold text-blue-400 ml-1 tracking-tighter">ppm</span>
+                        </div>
+                    </div>
+                    
+                    <input type="range" id="ppm-slider" min="800" max="2000" step="100" value="1400" class="mb-6">
+                    
+                    <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase px-1 mb-10">
+                        <span>Min (800)</span>
+                        <span>Avg (1400)</span>
+                        <span>Max (2000)</span>
+                    </div>
+
+                    <div class="p-5 bg-slate-900 rounded-2xl text-white shadow-inner">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Target Goal</span>
+                        </div>
+                        <p class="text-xl font-bold">목표 농도: <span class="text-emerald-400">400 ppm</span></p>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed opacity-80">학습 최적 환경(대기 수준) 도달을 위한 필요 반응량 시뮬레이션입니다.</p>
+                    </div>
+                </section>
+
+                <!-- Environment Info Card -->
+                <section class="glass-card p-6 shadow-xl border border-blue-100 bg-white/50">
+                    <h3 class="text-xs font-black text-slate-500 uppercase mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        교실 환경 설정 정보
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                            <p class="text-[10px] font-bold text-blue-400 uppercase mb-1">교실 바닥 면적</p>
+                            <p class="text-xl font-black text-slate-800 tracking-tighter">66.0 m²</p>
+                            <p class="text-[10px] text-slate-400 mt-1 font-medium">(국내 표준 교실)</p>
+                        </div>
+                        <div class="bg-orange-50/50 p-4 rounded-xl border border-orange-100">
+                            <p class="text-[10px] font-bold text-orange-400 uppercase mb-1">실내 평균 온도</p>
+                            <p class="text-xl font-black text-slate-800 tracking-tighter">20 °C</p>
+                            <p class="text-[10px] text-slate-400 mt-1 font-medium">(표준 실험 조건)</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Result Metrics -->
+            <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6 fade-in" style="animation-delay: 0.2s">
+                <!-- Result Main: WSC -->
+                <div class="glass-card p-8 shadow-2xl md:col-span-2 border-l-8 border-blue-600 bg-gradient-to-br from-white to-blue-50/30">
+                    <p class="text-xs font-black text-slate-400 uppercase mb-3">필요 WSC 총량 (수분 함유 탄산나트륨)</p>
+                    <div class="flex items-baseline gap-2">
+                        <span id="wsc-res" class="text-7xl font-black text-slate-900 tracking-tighter">80.7</span>
+                        <span class="text-3xl font-bold text-slate-400">kg</span>
+                    </div>
+                </div>
+
+                <!-- Detail: Sodium Carbonate -->
+                <div class="glass-card p-6 shadow-xl border-t-4 border-indigo-500 bg-white">
+                    <p class="text-xs font-black text-slate-400 uppercase mb-2">탄산나트륨 (Na₂CO₃)</p>
+                    <div class="flex items-baseline gap-1">
+                        <span id="na-res" class="text-4xl font-black text-indigo-600 tracking-tighter">56.5</span>
+                        <span class="text-xl font-bold text-slate-400 uppercase">kg</span>
+                    </div>
+                </div>
+
+                <!-- Detail: Water -->
+                <div class="glass-card p-6 shadow-xl border-t-4 border-cyan-500 bg-white">
+                    <p class="text-xs font-black text-slate-400 uppercase mb-2">필요 수분 (H₂O)</p>
+                    <div class="flex items-baseline gap-1">
+                        <span id="water-res" class="text-4xl font-black text-cyan-600 tracking-tighter">24.2</span>
+                        <span class="text-xl font-bold text-slate-400 uppercase">kg</span>
+                    </div>
+                </div>
+
+                <!-- Meter: CO2 Removed -->
+                <div class="glass-card p-8 shadow-xl md:col-span-2 bg-white">
+                    <div class="flex justify-between items-center mb-5">
+                        <p class="text-xs font-black text-slate-400 uppercase tracking-wide">제거될 CO₂ 총 몰수 (mol)</p>
+                        <span class="px-4 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-black tracking-tight">
+                            <span id="mol-res">8.07</span> mol
+                        </span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden shadow-inner">
+                        <div id="progress-bar" class="bg-gradient-to-r from-blue-600 to-emerald-400 h-full transition-all duration-700 ease-out shadow-lg" style="width: 50%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reference Table Section -->
+        <section class="glass-card overflow-hidden shadow-2xl mb-8 fade-in" style="animation-delay: 0.3s">
+            <div class="p-6 border-b border-slate-100 bg-white/80 flex justify-between items-center">
+                <h3 class="font-black text-slate-800 uppercase text-sm tracking-widest">Data Reference Table</h3>
+                <span class="text-[10px] font-bold text-slate-400 italic">Range: 800 - 2,000 ppm</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50/80">
+                        <tr class="text-[10px] font-black text-slate-400 uppercase">
+                            <th class="px-8 py-4">CO₂ 농도 (ppm)</th>
+                            <th class="px-8 py-4 text-center">제거 CO₂ (mol)</th>
+                            <th class="px-8 py-4 text-center">필요 WSC (kg)</th>
+                            <th class="px-8 py-4 text-center text-indigo-500">Na₂CO₃ (kg)</th>
+                            <th class="px-8 py-4 text-center text-cyan-500">H₂O (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="text-sm font-semibold text-slate-600">
+                        <!-- Content via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Research Limitation Disclaimer -->
+        <footer class="glass-card p-8 shadow-lg bg-amber-50/40 border border-amber-100 mb-20 fade-in" style="animation-delay: 0.4s">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 bg-amber-100 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-black text-amber-900 uppercase tracking-tight">연구의 한계 및 유의사항</h3>
+            </div>
+            <p class="text-sm text-slate-700 leading-relaxed font-medium">
+                본 시뮬레이터에서 활용된 포집 효율 수치는 선행 연구의 실험값과 화학적 양론 법칙에 기초한 데이터입니다. 이는 통제된 환경에서의 이론적 수치로, 실제 교실 현장에서 직접 측정한 실험값이 아니라는 점에서 일정한 오차가 존재할 수 있습니다. 특히 현장의 온도, 습도, 기류의 정체 정도, 학생 수에 따른 실시간 배출량 등의 외부 변수에 따라 실제 저감 효율은 변동될 수 있음을 연구의 한계로 명시합니다.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Data generated from chemical stoichiometry and user request
+        const simulationData = [
+            { ppm: 800, mol: 3.23, wsc: 32.3, na: 22.6, h2o: 9.7 },
+            { ppm: 900, mol: 4.03, wsc: 40.3, na: 28.2, h2o: 12.1 },
+            { ppm: 1000, mol: 4.84, wsc: 48.4, na: 33.9, h2o: 14.5 },
+            { ppm: 1100, mol: 5.65, wsc: 56.5, na: 39.6, h2o: 17.0 },
+            { ppm: 1200, mol: 6.45, wsc: 64.5, na: 45.2, h2o: 19.4 },
+            { ppm: 1300, mol: 7.26, wsc: 72.6, na: 50.8, h2o: 21.8 },
+            { ppm: 1400, mol: 8.07, wsc: 80.7, na: 56.5, h2o: 24.2 },
+            { ppm: 1500, mol: 8.87, wsc: 88.7, na: 62.1, h2o: 26.6 },
+            { ppm: 1600, mol: 9.68, wsc: 96.8, na: 67.8, h2o: 29.0 },
+            { ppm: 1700, mol: 10.49, wsc: 104.9, na: 73.4, h2o: 31.5 },
+            { ppm: 1800, mol: 11.29, wsc: 112.9, na: 79.0, h2o: 33.9 },
+            { ppm: 1900, mol: 12.10, wsc: 121.0, na: 84.7, h2o: 36.3 },
+            { ppm: 2000, mol: 12.91, wsc: 129.1, na: 90.4, h2o: 38.7 }
+        ];
+
+        // Element Selectors
+        const slider = document.getElementById('ppm-slider');
+        const ppmValText = document.getElementById('ppm-val');
+        const wscValText = document.getElementById('wsc-res');
+        const naValText = document.getElementById('na-res');
+        const waterValText = document.getElementById('water-res');
+        const molValText = document.getElementById('mol-res');
+        const progressBar = document.getElementById('progress-bar');
+        const tableBody = document.getElementById('table-body');
+
+        /**
+         * Render the reference data table
+         */
+        function renderTable() {
+            tableBody.innerHTML = simulationData.map(item => `
+                <tr id="row-${item.ppm}" class="border-b border-slate-50 transition-all duration-200">
+                    <td class="px-8 py-5 font-black text-slate-800">${item.ppm.toLocaleString()}</td>
+                    <td class="px-8 py-5 text-center font-bold text-slate-500">${item.mol.toFixed(2)}</td>
+                    <td class="px-8 py-5 text-center font-black text-slate-900">${item.wsc.toFixed(1)}</td>
+                    <td class="px-8 py-5 text-center font-bold text-indigo-600">${item.na.toFixed(1)}</td>
+                    <td class="px-8 py-5 text-center font-bold text-cyan-600">${item.h2o.toFixed(1)}</td>
+                </tr>
+            `).join('');
+        }
+
+        /**
+         * Update the UI based on slider movement
+         * @param {number} val - Current ppm value from slider
+         */
+        function updateUI(val) {
+            const data = simulationData.find(d => d.ppm == val);
+            if (!data) return;
+
+            // Numbers update
+            ppmValText.innerText = data.ppm.toLocaleString();
+            wscValText.innerText = data.wsc.toFixed(1);
+            naValText.innerText = data.na.toFixed(1);
+            waterValText.innerText = data.h2o.toFixed(1);
+            molValText.innerText = data.mol.toFixed(2);
+
+            // Progress bar logic (based on max value in dataset)
+            const maxMol = simulationData[simulationData.length - 1].mol;
+            const percentage = (data.mol / maxMol) * 100;
+            progressBar.style.width = percentage + '%';
+
+            // Table highlighting logic
+            document.querySelectorAll('tr').forEach(tr => tr.classList.remove('highlight-row'));
+            const activeRow = document.getElementById(`row-${val}`);
+            if (activeRow) {
+                activeRow.classList.add('highlight-row');
+                // Scroll row into view if necessary (optional)
+            }
+        }
+
+        // Event Listeners
+        slider.addEventListener('input', (e) => updateUI(e.target.value));
+
+        // Initial Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+            updateUI(1400); // Set default starting point
+        });
+    </script>
+</body>
+</html>
